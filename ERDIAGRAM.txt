@@ -1,0 +1,12 @@
++---------+          +--------------------+          +--------------------+          +------------------+
+|  USER   |          | ANALYSIS_REQUEST   |          | ANALYSIS_RESULT    |          |  PRODUCT_DATA    |
++---------+          +--------------------+          +--------------------+          +------------------+
+| PK user_id |<------| PK request_id      |<-------->| PK result_id       |<---------| PK product_id    |
+| username   | 1   N | FK user_id         | 1     1  | FK request_id      | 1     N  | FK result_id     |
+| email      |       | product_name       |          | market_score       |          | title            |
+| password   |       | product_url        |          | trust_score        |          | price            |
+| created_at |       | category           |          | conversion_rate    |          | rating           |
++---------+          | analysis_date      |          | speed_index        |          | reviews          |
+                     | status             |          | ai_summary         |          | description      |
+                     +--------------------+          | recommendations    |          +------------------+
+                                                     +--------------------+

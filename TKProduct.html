@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProductPulse | AI-Powered Product Review Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+/* ============================================
+   PRODUCTPULSE - STYLES.CSS
+   Modern Dark Theme with Animations
+   ============================================ */
+
+/* CSS Variables */
+:root {
+    --bg-deep: #0a0e1a;
+    --bg-card: rgba(15, 23, 42, 0.7);
+    --bg-card-hover: rgba(30, 41, 59, 0.8);
+    --border-color: rgba(148, 163, 184, 0.15);
+    --border-hover: rgba(56, 189, 248, 0.3);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    --accent-cyan: #38bdf8;
+    --accent-purple: #a855f7;
+    --accent-pink: #ec4899;
+    --accent-green: #22c55e;
+    --accent-orange: #f97316;
+    --accent-red: #ef4444;
+
+    --gradient-primary: linear-gradient(135deg, #38bdf8, #a855f7, #ec4899);
+    --gradient-glow: radial-gradient(circle, rgba(56, 189, 248, 0.15), transparent 70%);
+
+    --shadow-glow: 0 0 30px rgba(56, 189, 248, 0.15);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+    --font-primary: 'Inter', -apple-system, sans-serif;
+    --font-display: 'Space Grotesk', sans-serif;
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-primary);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Background Canvas */
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 14, 26, 0.8) 100%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(10, 14, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    transition: var(--transition-normal);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.logo-text {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: var(--transition-normal);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-primary);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.github-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-normal);
+}
+
+.github-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+}
+
+.mobile-menu-btn {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    background: none;
+}
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: rgba(10, 14, 26, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    z-index: 999;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-link {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.mobile-link:hover {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 2rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 4rem;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 650px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.6s ease;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.6s ease 0.1s both;
+}
+
+.gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.8rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: var(--transition-normal);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(56, 189, 248, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-cyan);
+}
+
+.hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border-color);
+}
+
+/* Hero Visual */
+.hero-visual {
+    flex: 1;
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: var(--gradient-glow);
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+.floating-card {
+    position: absolute;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-card);
+    animation: float 6s ease-in-out infinite;
+}
+
+.card-1 { top: 10%; left: 10%; animation-delay: 0s; }
+.card-2 { top: 50%; right: 5%; animation-delay: -2s; }
+.card-3 { bottom: 10%; left: 20%; animation-delay: -4s; }
+
+.card-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.card-1 .card-icon { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
+.card-2 .card-icon { background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan); }
+.card-3 .card-icon { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
+
+.card-title {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.card-value {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   ANALYZER SECTION
+   ============================================ */
+.analyzer {
+    padding: 6rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-purple);
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.analyzer-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Input Panel */
+.input-panel {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+    position: sticky;
+    top: 100px;
+}
+
+.input-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 0.3rem;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.tab-btn.active {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.tab-btn:hover:not(.active) {
+    color: var(--text-primary);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+    z-index: 2;
+}
+
+.main-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: var(--transition-normal);
+    outline: none;
+}
+
+.main-input:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.main-input::placeholder {
+    color: var(--text-muted);
+}
+
+.select-input {
+    appearance: none;
+    cursor: pointer;
+}
+
+.platform-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.platform-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-right: 0.3rem;
+}
+
+.platform-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.analyze-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.analyze-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(56, 189, 248, 0.3);
+}
+
+.analyze-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-loader {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.analyze-btn.loading .btn-text {
+    display: none;
+}
+
+.analyze-btn.loading .btn-loader {
+    display: flex;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Results Panel */
+.results-panel {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+    min-height: 500px;
+}
+
+.results-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: var(--accent-cyan);
+}
+
+.results-empty h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.results-empty p {
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Result Header */
+.result-header {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.product-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    margin-bottom: 0.75rem;
+}
+
+.product-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.product-meta {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.meta-item i {
+    color: var(--accent-cyan);
+}
+
+/* Analysis Grid */
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.analysis-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.2rem;
+    transition: var(--transition-normal);
+}
+
+.analysis-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.card-icon-bg {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.card-icon-bg.red { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+.card-icon-bg.orange { background: rgba(249, 115, 22, 0.15); color: var(--accent-orange); }
+.card-icon-bg.green { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+
+.card-header h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.insight-list {
+    list-style: none;
+}
+
+.insight-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.insight-list li:last-child {
+    border-bottom: none;
+}
+
+.insight-list li i {
+    color: var(--accent-cyan);
+    font-size: 0.7rem;
+    margin-top: 0.3rem;
+    flex-shrink: 0;
+}
+
+/* Score Dashboard */
+.score-dashboard {
+    display: flex;
+    justify-content: space-around;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.score-item {
+    text-align: center;
+}
+
+.score-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 0.5rem;
+}
+
+.score-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.score-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 6;
+}
+
+.score-progress {
+    fill: none;
+    stroke: url(#scoreGradient);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    transition: stroke-dashoffset 1.5s ease;
+}
+
+.score-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.score-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Action Bar */
+.action-bar {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 10px;
+    color: var(--accent-cyan);
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: var(--transition-normal);
+}
+
+.action-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    transform: translateY(-2px);
+}
+
+.action-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.action-btn.secondary:hover {
+    border-color: var(--accent-cyan);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+.features {
+    padding: 6rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.feature-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-normal);
+    cursor: default;
+}
+
+.feature-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.feature-icon {
+    width: 55px;
+    height: 55px;
+    background: var(--gradient-primary);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: white;
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.feature-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.feature-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    position: relative;
+    z-index: 2;
+}
+
+.feature-glow {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: var(--gradient-glow);
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    top: -30px;
+    right: -30px;
+}
+
+.feature-card:hover .feature-glow {
+    opacity: 1;
+}
+
+/* ============================================
+   ABOUT SECTION
+   ============================================ */
+.about {
+    padding: 6rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.about-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.about-content .section-title {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.about-text {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.about-text strong {
+    color: var(--text-primary);
+}
+
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+.tech-badge:hover {
+    border-color: var(--accent-cyan);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.about-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Code Window */
+.about-visual {
+    display: flex;
+    justify-content: center;
+}
+
+.code-window {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.code-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.code-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.code-dot.red { background: #ef4444; }
+.code-dot.yellow { background: #f59e0b; }
+.code-dot.green { background: #22c55e; }
+
+.code-title {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+.code-body {
+    padding: 1.2rem;
+    overflow-x: auto;
+}
+
+.code-body pre {
+    margin: 0;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.code-keyword { color: #c678dd; }
+.code-var { color: #e5c07b; }
+.code-func { color: #61afef; }
+.code-prop { color: #e06c75; }
+.code-comment { color: #5c6370; font-style: italic; }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.footer-text {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.footer-social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.social-link {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    transition: var(--transition-normal);
+}
+
+.social-link:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    transform: translateY(-3px);
+}
+
+.footer-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 1.5rem 0;
+}
+
+.footer-credit {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.footer-credit strong {
+    color: var(--accent-cyan);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 1024px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 7rem;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-stats {
+        justify-content: center;
+    }
+
+    .hero-visual {
+        width: 100%;
+        min-height: 300px;
+    }
+
+    .analyzer-container {
+        grid-template-columns: 1fr;
+    }
+
+    .input-panel {
+        position: static;
+    }
+
+    .about-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .about-content .section-title {
+        text-align: center;
+    }
+
+    .tech-stack {
+        justify-content: center;
+    }
+
+    .about-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links,
+    .nav-actions {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .mobile-menu.active {
+        display: flex;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .stat-divider {
+        width: 60px;
+        height: 1px;
+    }
+
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .score-dashboard {
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .code-window {
+        max-width: 100%;
+    }
+
+    .code-body pre {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-container {
+        padding: 1rem;
+    }
+
+    .hero {
+        padding: 6rem 1rem 3rem;
+    }
+
+    .analyzer,
+    .features,
+    .about {
+        padding: 4rem 1rem;
+    }
+
+    .input-panel,
+    .results-panel {
+        padding: 1.5rem;
+    }
+
+    .floating-card {
+        display: none;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <!-- Animated Background Canvas -->
+    <canvas id="bgCanvas"></canvas>
+    <div class="overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <span class="logo-text">ProductPulse</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#analyzer" class="nav-link">Analyzer</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            <div class="nav-actions">
+                <a href="https://github.com/thiru2777" target="_blank" class="github-btn">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home" class="mobile-link">Home</a>
+        <a href="#analyzer" class="mobile-link">Analyzer</a>
+        <a href="#features" class="mobile-link">Features</a>
+        <a href="#about" class="mobile-link">About</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles"></i>
+                <span>AI-Powered Analysis</span>
+            </div>
+            <h1 class="hero-title">
+                Decode Your Product
+                <span class="gradient-text">Market Potential</span>
+            </h1>
+            <p class="hero-subtitle">
+                Advanced AI diagnostics that reveal why products underperform. 
+                Get actionable insights to boost conversion rates and dominate your niche.
+            </p>
+            <div class="hero-buttons">
+                <a href="#analyzer" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Start Analysis
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <i class="fas fa-play-circle"></i>
+                    Learn More
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="50000">0</div>
+                    <div class="stat-label">Products Analyzed</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="98">0</div>
+                    <div class="stat-label">Accuracy Rate %</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="150">0</div>
+                    <div class="stat-label">Countries Served</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <div class="card-icon"><i class="fas fa-trending-up"></i></div>
+                <div class="card-info">
+                    <div class="card-title">Conversion Rate</div>
+                    <div class="card-value">+47%</div>
+                </div>
+            </div>
+            <div class="floating-card card-2">
+                <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="card-info">
+                    <div class="card-title">Trust Score</div>
+                    <div class="card-value">9.2/10</div>
+                </div>
+            </div>
+            <div class="floating-card card-3">
+                <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                <div class="card-info">
+                    <div class="card-title">Speed Index</div>
+                    <div class="card-value">0.8s</div>
+                </div>
+            </div>
+            <div class="hero-glow"></div>
+        </div>
+    </section>
+
+    <!-- Analyzer Section -->
+    <section id="analyzer" class="analyzer">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-microscope"></i>
+                <span>Product Analyzer</span>
+            </div>
+            <h2 class="section-title">Analyze Any Product <span class="gradient-text">Instantly</span></h2>
+            <p class="section-subtitle">Enter a product URL or name to get deep AI-powered market insights</p>
+        </div>
+
+        <div class="analyzer-container">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <div class="input-tabs">
+                    <button class="tab-btn active" data-tab="url">
+                        <i class="fas fa-link"></i>
+                        Product URL
+                    </button>
+                    <button class="tab-btn" data-tab="name">
+                        <i class="fas fa-search"></i>
+                        Product Name
+                    </button>
+                </div>
+
+                <div class="tab-content active" id="url-tab">
+                    <div class="input-group">
+                        <div class="input-icon"><i class="fas fa-globe"></i></div>
+                        <input type="url" id="productUrl" placeholder="Paste product listing URL (Amazon, Flipkart, AliExpress...)" class="main-input">
+                    </div>
+                    <div class="platform-tags">
+                        <span class="platform-label">Supported:</span>
+                        <span class="platform-tag"><i class="fab fa-amazon"></i> Amazon</span>
+                        <span class="platform-tag"><i class="fas fa-shopping-cart"></i> Flipkart</span>
+                        <span class="platform-tag"><i class="fas fa-globe-asia"></i> AliExpress</span>
+                        <span class="platform-tag"><i class="fas fa-leaf"></i> iHerb</span>
+                        <span class="platform-tag"><i class="fas fa-tshirt"></i> SHEIN</span>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="name-tab">
+                    <div class="input-group">
+                        <div class="input-icon"><i class="fas fa-box"></i></div>
+                        <input type="text" id="productName" placeholder="Enter product name (e.g., iPhone 15 Pro, Sony WH-1000XM5...)" class="main-input">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-icon"><i class="fas fa-store"></i></div>
+                        <select id="platformSelect" class="main-input select-input">
+                            <option value="">Select Platform (Optional)</option>
+                            <option value="amazon">Amazon</option>
+                            <option value="flipkart">Flipkart</option>
+                            <option value="aliexpress">AliExpress</option>
+                            <option value="generic">Generic / Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="analyze-btn" id="analyzeBtn">
+                    <span class="btn-text">
+                        <i class="fas fa-rocket"></i>
+                        Launch Analysis
+                    </span>
+                    <span class="btn-loader">
+                        <div class="spinner"></div>
+                        Analyzing...
+                    </span>
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel" id="resultsPanel">
+                <div class="results-empty" id="resultsEmpty">
+                    <div class="empty-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Ready to Analyze</h3>
+                    <p>Enter a product URL or name above to get started with your AI-powered market analysis.</p>
+                </div>
+
+                <div class="results-content" id="resultsContent" style="display: none;">
+                    <!-- Product Header -->
+                    <div class="result-header">
+                        <div class="product-badge" id="productBadge">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span id="productSource">Amazon</span>
+                        </div>
+                        <h3 class="product-title" id="productTitle">Product Name</h3>
+                        <div class="product-meta">
+                            <span class="meta-item" id="productPrice">
+                                <i class="fas fa-tag"></i>
+                                ₹1,299
+                            </span>
+                            <span class="meta-item" id="productRating">
+                                <i class="fas fa-star"></i>
+                                4.2/5
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Cards -->
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <div class="card-header">
+                                <div class="card-icon-bg red">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <h4>Market Resistance</h4>
+                            </div>
+                            <div class="card-body" id="marketResistance">
+                                <ul class="insight-list">
+                                    <li><i class="fas fa-chevron-right"></i>High competition in budget segment</li>
+                                    <li><i class="fas fa-chevron-right"></i>Limited brand recognition</li>
+                                    <li><i class="fas fa-chevron-right"></i>Price sensitivity among target audience</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card">
+                            <div class="card-header">
+                                <div class="card-icon-bg orange">
+                                    <i class="fas fa-bug"></i>
+                                </div>
+                                <h4>Core Disadvantages</h4>
+                            </div>
+                            <div class="card-body" id="coreDisadvantages">
+                                <ul class="insight-list">
+                                    <li><i class="fas fa-chevron-right"></i>Inconsistent build quality reports</li>
+                                    <li><i class="fas fa-chevron-right"></i>Battery life below category average</li>
+                                    <li><i class="fas fa-chevron-right"></i>Customer service response delays</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card">
+                            <div class="card-header">
+                                <div class="card-icon-bg green">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <h4>Recommended Fixes</h4>
+                            </div>
+                            <div class="card-body" id="recommendedFixes">
+                                <ul class="insight-list">
+                                    <li><i class="fas fa-chevron-right"></i>Implement aggressive pricing strategy</li>
+                                    <li><i class="fas fa-chevron-right"></i>Enhance product photography</li>
+                                    <li><i class="fas fa-chevron-right"></i>Launch influencer partnership program</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Score Dashboard -->
+                    <div class="score-dashboard">
+                        <div class="score-item">
+                            <div class="score-ring" data-score="72">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="score-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="score-progress" cx="50" cy="50" r="45"/>
+                                </svg>
+                                <div class="score-value">72</div>
+                            </div>
+                            <div class="score-label">Market Fit</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-ring" data-score="58">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="score-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="score-progress" cx="50" cy="50" r="45"/>
+                                </svg>
+                                <div class="score-value">58</div>
+                            </div>
+                            <div class="score-label">Price Competitiveness</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-ring" data-score="81">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="score-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="score-progress" cx="50" cy="50" r="45"/>
+                                </svg>
+                                <div class="score-value">81</div>
+                            </div>
+                            <div class="score-label">Feature Score</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-ring" data-score="65">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="score-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="score-progress" cx="50" cy="50" r="45"/>
+                                </svg>
+                                <div class="score-value">65</div>
+                            </div>
+                            <div class="score-label">Brand Trust</div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="action-bar">
+                        <button class="action-btn" id="exportBtn">
+                            <i class="fas fa-download"></i>
+                            Export Report
+                        </button>
+                        <button class="action-btn secondary" id="newAnalysisBtn">
+                            <i class="fas fa-redo"></i>
+                            New Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-cogs"></i>
+                <span>Powerful Features</span>
+            </div>
+            <h2 class="section-title">Everything You Need to <span class="gradient-text">Win</span></h2>
+            <p class="section-subtitle">Comprehensive toolkit for product optimization and market dominance</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI Deep Analysis</h3>
+                <p>Advanced neural networks process millions of data points to identify hidden market patterns and consumer behavior trends.</p>
+                <div class="feature-glow"></div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-spider"></i>
+                </div>
+                <h3>Live Web Scraping</h3>
+                <p>Real-time extraction of product data, pricing, reviews, and ratings from major e-commerce platforms worldwide.</p>
+                <div class="feature-glow"></div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Competitor Tracking</h3>
+                <p>Monitor competitor pricing, feature sets, and market positioning with automated alerts and trend analysis.</p>
+                <div class="feature-glow"></div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>Conversion Analytics</h3>
+                <p>Pinpoint exact friction points in your sales funnel with detailed conversion rate optimization recommendations.</p>
+                <div class="feature-glow"></div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <h3>Export Reports</h3>
+                <p>Generate beautiful PDF and CSV reports with actionable insights for your team and stakeholders.</p>
+                <div class="feature-glow"></div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Real-time Alerts</h3>
+                <p>Get instant notifications when market conditions change, competitors adjust pricing, or new trends emerge.</p>
+                <div class="feature-glow"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="about-container">
+            <div class="about-content">
+                <div class="section-badge">
+                    <i class="fas fa-user"></i>
+                    <span>About Developer</span>
+                </div>
+                <h2 class="section-title">Built with <span class="gradient-text">Passion</span></h2>
+                <p class="about-text">
+                    ProductPulse is a cutting-edge product analysis platform developed by <strong>ThiruKumaran</strong>. 
+                    Designed to help e-commerce sellers, marketers, and product managers make data-driven decisions 
+                    with the power of artificial intelligence.
+                </p>
+                <p class="about-text">
+                    This project combines modern web technologies with advanced AI to deliver actionable insights 
+                    that drive real business results. From live web scraping to intelligent market analysis, 
+                    every feature is crafted for maximum impact.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge"><i class="fab fa-html5"></i> HTML5</span>
+                    <span class="tech-badge"><i class="fab fa-css3-alt"></i> CSS3</span>
+                    <span class="tech-badge"><i class="fab fa-js"></i> JavaScript</span>
+                    <span class="tech-badge"><i class="fas fa-brain"></i> Gemini AI</span>
+                </div>
+                <div class="about-actions">
+                    <a href="https://github.com/thiru2777" target="_blank" class="btn btn-primary">
+                        <i class="fab fa-github"></i>
+                        View on GitHub
+                    </a>
+                    <a href="mailto:thirukumaran@example.com" class="btn btn-secondary">
+                        <i class="fas fa-envelope"></i>
+                        Get in Touch
+                    </a>
+                </div>
+            </div>
+            <div class="about-visual">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="code-dot red"></div>
+                        <div class="code-dot yellow"></div>
+                        <div class="code-dot green"></div>
+                        <span class="code-title">analyzer.js</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="code-keyword">const</span> <span class="code-var">analyzeProduct</span> = <span class="code-keyword">async</span> (product) => {
+  <span class="code-comment">// AI-powered analysis</span>
+  <span class="code-keyword">const</span> <span class="code-var">insights</span> = <span class="code-keyword">await</span> <span class="code-func">gemini</span>.<span class="code-func">analyze</span>(product);
+
+  <span class="code-keyword">return</span> {
+    score: <span class="code-var">insights</span>.<span class="code-prop">confidence</span>,
+    marketFit: <span class="code-var">insights</span>.<span class="code-prop">marketFit</span>,
+    fixes: <span class="code-var">insights</span>.<span class="code-prop">recommendations</span>
+  };
+};</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <span class="logo-text">ProductPulse</span>
+            </div>
+            <p class="footer-text">AI-powered product intelligence for modern e-commerce.</p>
+            <div class="footer-social">
+                <a href="https://github.com/thiru2777" target="_blank" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+            <div class="footer-divider"></div>
+            <p class="footer-credit">
+                <i class="fas fa-code"></i> Crafted with passion by <strong>ThiruKumaran</strong>
+            </p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <script>
+/* ============================================
+   PRODUCTPULSE - SCRIPT.JS
+   Interactive Functionality & Animations
+   ============================================ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ============================================
+    // CANVAS BACKGROUND ANIMATION
+    // ============================================
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let particles = [];
+    let mouse = { x: null, y: null };
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 2 + 1;
+            this.color = this.getRandomColor();
+        }
+
+        getRandomColor() {
+            const colors = [
+                'rgba(56, 189, 248, ',
+                'rgba(168, 85, 247, ',
+                'rgba(236, 72, 153, ',
+                'rgba(34, 197, 94, '
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+
+            if (mouse.x !== null && mouse.y !== null) {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    this.vx += (dx / dist) * force * 0.02;
+                    this.vy += (dy / dist) * force * 0.02;
+                }
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color + '0.6)';
+            ctx.fill();
+        }
+    }
+
+    const particleCount = Math.min(80, Math.floor((window.innerWidth * window.innerHeight) / 15000));
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+    });
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 120) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * (1 - dist / 120)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // ============================================
+    // MOBILE MENU
+    // ============================================
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('active');
+        const icon = mobileMenuBtn.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            icon.classList.add('fa-bars');
+            icon.classList.remove('fa-times');
+        });
+    });
+
+    // ============================================
+    // NAVBAR SCROLL EFFECT
+    // ============================================
+    const navbar = document.querySelector('.navbar');
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll > 50) {
+            navbar.style.background = 'rgba(10, 14, 26, 0.95)';
+            navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.3)';
+        } else {
+            navbar.style.background = 'rgba(10, 14, 26, 0.8)';
+            navbar.style.boxShadow = 'none';
+        }
+    });
+
+    // ============================================
+    // ACTIVE NAV LINK ON SCROLL
+    // ============================================
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    // ============================================
+    // ANIMATED COUNTER
+    // ============================================
+    const counters = document.querySelectorAll('.stat-number');
+    let countersAnimated = false;
+
+    function animateCounters() {
+        if (countersAnimated) return;
+
+        const heroSection = document.querySelector('.hero');
+        const rect = heroSection.getBoundingClientRect();
+
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+            countersAnimated = true;
+
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target.toLocaleString();
+                    }
+                };
+
+                updateCounter();
+            });
+        }
+    }
+
+    window.addEventListener('scroll', animateCounters);
+    animateCounters();
+
+    // ============================================
+    // TAB SWITCHING
+    // ============================================
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        });
+    });
+
+    // ============================================
+    // ANALYZE BUTTON FUNCTIONALITY
+    // ============================================
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const resultsEmpty = document.getElementById('resultsEmpty');
+    const resultsContent = document.getElementById('resultsContent');
+    const newAnalysisBtn = document.getElementById('newAnalysisBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    const demoProducts = [
+        {
+            name: 'Wireless Bluetooth Earbuds Pro',
+            source: 'Amazon',
+            price: '2,499',
+            rating: '4.2/5',
+            marketResistance: [
+                'High competition in budget TWS segment',
+                'Limited brand recognition vs Apple/Samsung',
+                'Price sensitivity among target audience',
+                'Negative reviews about battery inconsistency'
+            ],
+            disadvantages: [
+                'Inconsistent build quality across batches',
+                'Battery life below advertised 30 hours',
+                'Audio latency issues during gaming',
+                'Customer service response delays'
+            ],
+            fixes: [
+                'Implement aggressive pricing strategy',
+                'Enhance product photography with lifestyle shots',
+                'Launch influencer partnership program',
+                'Add 2-year warranty to build trust',
+                'Improve packaging to justify premium feel'
+            ],
+            scores: { marketFit: 72, priceComp: 58, feature: 81, trust: 65 }
+        },
+        {
+            name: 'Smart Fitness Watch Ultra',
+            source: 'Flipkart',
+            price: '4,999',
+            rating: '3.8/5',
+            marketResistance: [
+                'Oversaturated fitness tracker market',
+                'Consumer preference for established brands',
+                'Feature overlap with smartphone capabilities',
+                'High return rate due to sizing issues'
+            ],
+            disadvantages: [
+                'Inaccurate heart rate monitoring',
+                'Poor app ecosystem and sync issues',
+                'Screen visibility in direct sunlight',
+                'Uncomfortable strap material for long wear'
+            ],
+            fixes: [
+                'Partner with fitness influencers for credibility',
+                'Offer free strap customization options',
+                'Develop companion app with social features',
+                'Focus on unique health metrics (SpO2, stress)',
+                'Create unboxing experience with premium feel'
+            ],
+            scores: { marketFit: 65, priceComp: 72, feature: 70, trust: 55 }
+        },
+        {
+            name: 'Portable Laptop Stand Aluminum',
+            source: 'AliExpress',
+            price: '899',
+            rating: '4.5/5',
+            marketResistance: [
+                'Low differentiation in accessories market',
+                'Shipping delays affecting customer satisfaction',
+                'Quality perception issues with AliExpress',
+                'Seasonal demand fluctuations'
+            ],
+            disadvantages: [
+                'Wobbling on uneven surfaces',
+                'Limited height adjustment range',
+                'Scratching on laptop bottom',
+                'No cable management features'
+            ],
+            fixes: [
+                'Add anti-slip silicone pads',
+                'Include cable organizer clip',
+                'Create "Work From Home" bundle',
+                'Offer local warehouse shipping option',
+                'Develop TikTok marketing campaign'
+            ],
+            scores: { marketFit: 78, priceComp: 85, feature: 68, trust: 72 }
+        }
+    ];
+
+    analyzeBtn.addEventListener('click', () => {
+        const urlInput = document.getElementById('productUrl');
+        const nameInput = document.getElementById('productName');
+
+        const isUrlTab = document.getElementById('url-tab').classList.contains('active');
+        const input = isUrlTab ? urlInput.value.trim() : nameInput.value.trim();
+
+        if (!input) {
+            const activeInput = isUrlTab ? urlInput : nameInput;
+            activeInput.style.animation = 'shake 0.5s ease';
+            setTimeout(() => activeInput.style.animation = '', 500);
+            return;
+        }
+
+        analyzeBtn.classList.add('loading');
+        analyzeBtn.disabled = true;
+
+        setTimeout(() => {
+            analyzeBtn.classList.remove('loading');
+            analyzeBtn.disabled = false;
+
+            const product = demoProducts[Math.floor(Math.random() * demoProducts.length)];
+
+            document.getElementById('productSource').textContent = product.source;
+            document.getElementById('productTitle').textContent = isUrlTab ? 'Product from ' + input.split('/')[2] : input;
+            document.getElementById('productPrice').innerHTML = '<i class="fas fa-tag"></i> ' + product.price;
+            document.getElementById('productRating').innerHTML = '<i class="fas fa-star"></i> ' + product.rating;
+
+            updateList('marketResistance', product.marketResistance);
+            updateList('coreDisadvantages', product.disadvantages);
+            updateList('recommendedFixes', product.fixes);
+
+            updateScores(product.scores);
+
+            resultsEmpty.style.display = 'none';
+            resultsContent.style.display = 'block';
+
+            resultsContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        }, 2000);
+    });
+
+    function updateList(elementId, items) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = items.map(item => 
+            '<li><i class="fas fa-chevron-right"></i>' + item + '</li>'
+        ).join('');
+    }
+
+    function updateScores(scores) {
+        const scoreItems = document.querySelectorAll('.score-item');
+        const scoreValues = [scores.marketFit, scores.priceComp, scores.feature, scores.trust];
+
+        scoreItems.forEach((item, index) => {
+            const ring = item.querySelector('.score-progress');
+            const value = item.querySelector('.score-value');
+            const score = scoreValues[index];
+
+            const circumference = 2 * Math.PI * 45;
+            const offset = circumference - (score / 100) * circumference;
+
+            setTimeout(() => {
+                ring.style.strokeDashoffset = offset;
+            }, index * 200);
+
+            animateNumber(value, 0, score, 1500);
+        });
+    }
+
+    function animateNumber(element, start, end, duration) {
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(start + (end - start) * easeProgress);
+
+            element.textContent = current;
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    newAnalysisBtn.addEventListener('click', () => {
+        resultsContent.style.display = 'none';
+        resultsEmpty.style.display = 'block';
+
+        document.getElementById('productUrl').value = '';
+        document.getElementById('productName').value = '';
+        document.getElementById('platformSelect').value = '';
+
+        document.querySelectorAll('.score-progress').forEach(ring => {
+            ring.style.strokeDashoffset = 283;
+        });
+    });
+
+    exportBtn.addEventListener('click', () => {
+        const productTitle = document.getElementById('productTitle').textContent;
+        const report = `PRODUCT ANALYSIS REPORT
+========================
+Product: ${productTitle}
+Generated: ${new Date().toLocaleString()}
+
+MARKET RESISTANCE & SALES BLOCKERS
+-----------------------------------
+${Array.from(document.querySelectorAll('#marketResistance li')).map(li => '- ' + li.textContent).join('\n')}
+
+CORE DISADVANTAGES & PRODUCT FLAWS
+-----------------------------------
+${Array.from(document.querySelectorAll('#coreDisadvantages li')).map(li => '- ' + li.textContent).join('\n')}
+
+RECOMMENDED FIXES
+-----------------
+${Array.from(document.querySelectorAll('#recommendedFixes li')).map(li => '- ' + li.textContent).join('\n')}
+
+SCORES
+------
+Market Fit: ${document.querySelectorAll('.score-value')[0]?.textContent || 'N/A'}
+Price Competitiveness: ${document.querySelectorAll('.score-value')[1]?.textContent || 'N/A'}
+Feature Score: ${document.querySelectorAll('.score-value')[2]?.textContent || 'N/A'}
+Brand Trust: ${document.querySelectorAll('.score-value')[3]?.textContent || 'N/A'}
+
+Report generated by ProductPulse
+Developed by ThiruKumaran`;
+
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `product-analysis-${Date.now()}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // ============================================
+    // SCROLL REVEAL ANIMATIONS
+    // ============================================
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-card, .analysis-card, .section-header').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+
+    // ============================================
+    // SMOOTH SCROLL
+    // ============================================
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // ============================================
+    // SHAKE ANIMATION
+    // ============================================
+    const shakeStyle = document.createElement('style');
+    shakeStyle.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+    `;
+    document.head.appendChild(shakeStyle);
+
+    // ============================================
+    // SVG GRADIENT
+    // ============================================
+    const svgDefs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgDefs.setAttribute('width', '0');
+    svgDefs.setAttribute('height', '0');
+    svgDefs.innerHTML = `
+        <defs>
+            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#38bdf8"/>
+                <stop offset="50%" style="stop-color:#a855f7"/>
+                <stop offset="100%" style="stop-color:#ec4899"/>
+            </linearGradient>
+        </defs>
+    `;
+    document.body.appendChild(svgDefs);
+
+    console.log('ProductPulse initialized successfully!');
+});
+
+    </script>
+</body>
+</html>
